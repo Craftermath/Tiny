@@ -1,0 +1,66 @@
+<!-- app/templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiny URL</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Tiny URL Generator</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.url.label }}<br>
+            {{ form.url(size=50) }}<br>
+            {% for error in form.url.errors %}
+                <span style="color: red;">{{ error }}</span><br>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+
+    {% if tiny_url %}
+    <div class="tiny-url-container">
+        <p>Your tiny URL is: <a href="{{ url_for('main.redirect_to_original_url', tiny_url=tiny_url) }}">{{ tiny_url }}</a></p>
+        <button id="copy-button" onclick="copyToClipboard('{{ tiny_url }}')">Copy</button>
+    </div>
+    {% endif %}
+
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            }).catch(() => {
+                fallbackCopyToClipboard(text);
+            });
+        } else {
+            fallbackCopyToClipboard(text);
+        }
+    }
+
+    function fallbackCopyToClipboard(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            document.execCommand('copy');
+            alert('Copied to clipboard!');
+        } catch (err) {
+            alert('Failed to copy!');
+        }
+        document.body.removeChild(textarea);
+    }
+ 
+</script>
+<footer style="text-align: center; margin-top: 20px; color: #bb86fc;">
+    <p> 2025 Tiny URL</p>
+</footer>
+</body>
+</html>
