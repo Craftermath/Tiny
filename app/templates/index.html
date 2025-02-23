@@ -28,30 +28,38 @@
     {% if tiny_url %}
     <div class="tiny-url-container">
         <p>Your tiny URL is: <a href="{{ url_for('main.redirect_to_original_url', tiny_url=tiny_url) }}">{{ tiny_url }}</a></p>
-        <button id="copy-button" onclick="copyToClipboard('{{ tiny_url }}')">Copy</button>
+        <button id="copy-button" onclick="copyToClipboard('{{ url_for('main.redirect_to_original_url', tiny_url=tiny_url, _external=True) }}')">Copy</button>
     </div>
     {% endif %}
 
     <script>
         function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Copied to clipboard!');
-            }).catch(() => {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Copied to clipboard!');
+                }).catch(() => {
+                    fallbackCopyToClipboard(text);
+                });
+            } else {
                 fallbackCopyToClipboard(text);
-            });
-        } else {
-            fallbackCopyToClipboard(text);
+            }
         }
-    }
 
     function fallbackCopyToClipboard(text) {
         const textarea = document.createElement('textarea');
         textarea.value = text;
+        textarea.setAttribute('readonly', ''); // Make it readonly to prevent keyboard popup on mobile
+        textarea.style.position = 'absolute';
+        textarea.style.left = '-9999px'; // Move it off-screen
         document.body.appendChild(textarea);
         textarea.select();
         try {
-            document.execCommand('copy');
-            alert('Copied to clipboard!');
+            const successful = document.execCommand('copy');
+            if (successful) {
+                alert('Copied to clipboard!');
+            } else {
+                alert('Failed to copy!');
+            }
         } catch (err) {
             alert('Failed to copy!');
         }

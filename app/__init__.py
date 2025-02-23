@@ -16,7 +16,7 @@ def create_app():
     app.config['CACHE_TYPE'] = 'SimpleCache'
     app.config['CACHE_DEFAULT_TIMEOUT'] = 300
     app.config['WTF_CSRF_ENABLED'] = True
-    app.config['SECRET_KEY'] = 'ifoudvlvfhcoiredavfjoefidsa'
+    app.config['SECRET_KEY'] = 'choose_another_password_here'   # Flask-WTF
 
     # Initialize extensions
     db.init_app(app)
