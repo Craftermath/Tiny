@@ -4,11 +4,12 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_caching import Cache
 
-db = SQLAlchemy()
-cache = Cache()
+
+db: SQLAlchemy = SQLAlchemy()
+cache: Cache = Cache()
 
 def create_app():
-    app = Flask(__name__)
+    app: Flask = Flask(__name__)
 
     # Configuration
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tinyurl.db'

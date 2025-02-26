@@ -1,25 +1,25 @@
 # app/views.py
 
-from flask import Blueprint, request, redirect, render_template
+from flask import Blueprint, request, redirect, render_template, Response
 from .forms import URLForm
 from .models import URL
 from . import db, cache
 import shortuuid
 
 
-main_blueprint = Blueprint('main', __name__)
+main_blueprint: Blueprint = Blueprint('main', __name__)
 
-def generate_tiny_url():
+def generate_tiny_url() -> str:
     return shortuuid.ShortUUID().random(length=6)
 
 @main_blueprint.route('/', methods=['GET', 'POST'])
-def index():
-    form = URLForm()
+def index() -> str:
+    form: URLForm = URLForm()
 
     if request.method == 'POST':
         if form.validate_on_submit():
-            original_url = form.url.data
-            tiny_url = generate_tiny_url()
+            original_url: str = form.url.data
+            tiny_url: str = generate_tiny_url()
         
             while URL.query.filter_by(tiny_url=tiny_url).first() is not None:
                 tiny_url = generate_tiny_url()
@@ -37,6 +37,6 @@ def index():
 
 @main_blueprint.route('/<tiny_url>')
 @cache.cached(timeout=300)
-def redirect_to_original_url(tiny_url):
-    url = URL.query.filter_by(tiny_url=tiny_url).first_or_404()
+def redirect_to_original_url(tiny_url: str) -> Response:
+    url: URL = URL.query.filter_by(tiny_url=tiny_url).first_or_404()
     return redirect(url.original_url)
